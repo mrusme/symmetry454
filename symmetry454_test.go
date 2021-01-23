@@ -45,3 +45,10 @@ func TestSymDayOfYear(t *testing.T) {
     t.Fatalf(`SymDayOfYear(6, 17) = %v, want 171`, res)
   }
 }
+
+func TestSymToFixed(t *testing.T) {
+  res := SymToFixed(2009, 4, 5)
+  if res != 733500 {
+    t.Fatalf(`SymToFixed(2009, 4, 5) = %v, want 733500`, res)
+  }
+}

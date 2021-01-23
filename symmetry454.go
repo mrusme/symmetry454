@@ -69,3 +69,7 @@ func SymDaysBeforeMonth(symMonth int) (int) {
 func SymDayOfYear(symMonth int, symDay int) (int) {
   return (SymDaysBeforeMonth(symMonth) + symDay);
 }
+
+func SymToFixed(symYear int, symMonth int, symDay int) (int) {
+  return (SymNewYearDay(symYear) + SymDayOfYear(symMonth, symDay) - 1)
+}
