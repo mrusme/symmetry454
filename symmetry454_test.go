@@ -17,3 +17,11 @@ func TestGregorianOrdinalDay(t *testing.T) {
     t.Fatalf(`GregorianOrdinalDay(2012, 7, 14) = %v, want 196`, res)
   }
 }
+
+func TestIsSymLeapYear(t *testing.T) {
+  res := IsSymLeapYear(2009)
+  if res != true {
+    t.Fatalf(`IsSymLeapYear(2009) = %v, want true`, res)
+  }
+}
+

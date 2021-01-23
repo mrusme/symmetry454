@@ -45,3 +45,10 @@ func GregorianOrdinalDay(gregYear int, gregMonth int, gregDay int) (int) {
 
   return int(gregorianOrdinalDay)
 }
+
+func IsSymLeapYear(symYear int) (bool) {
+  C := 293.0
+  L := 52.0
+  K := (C - 1.0) / 2.0
+  return math.Mod(L * float64(symYear) + K, C) < L
+}
