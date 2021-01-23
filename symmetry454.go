@@ -73,3 +73,23 @@ func SymDayOfYear(symMonth int, symDay int) (int) {
 func SymToFixed(symYear int, symMonth int, symDay int) (int) {
   return (SymNewYearDay(symYear) + SymDayOfYear(symMonth, symDay) - 1)
 }
+
+func FixedToSymYear(fixedDate int) (int) {
+  cycleMeanYear := 365.0 + 71.0 / 293.0
+  symYear := int((float64(fixedDate) - SymEpoch) / cycleMeanYear)
+  startOfYear := SymNewYearDay(symYear)
+  if startOfYear < fixedDate {
+    if fixedDate - startOfYear >= 364 {
+      startOfNextYear := SymNewYearDay(symYear + 1)
+      if fixedDate >= startOfNextYear {
+        symYear += 1
+        startOfYear = startOfNextYear
+      }
+    }
+  } else if startOfYear > fixedDate {
+    symYear -= 1
+    startOfYear = SymNewYearDay(symYear)
+  }
+
+  return symYear
+}
