@@ -25,3 +25,9 @@ func TestIsSymLeapYear(t *testing.T) {
   }
 }
 
+func TestSymNewYearDay(t *testing.T) {
+  res := SymNewYearDay(2010)
+  if res != 733776 {
+    t.Fatalf(`SymNewYearDay(2010) = %v, want 733776`, res)
+  }
+}

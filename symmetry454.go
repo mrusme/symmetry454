@@ -7,6 +7,7 @@ import (
 )
 
 const GregorianEpoch = 1
+const SymEpoch = GregorianEpoch
 
 func PriorElapsedDays(gregYear int) (int) {
   priorYear := float64(gregYear) - 1.0
@@ -52,3 +53,10 @@ func IsSymLeapYear(symYear int) (bool) {
   K := (C - 1.0) / 2.0
   return math.Mod(L * float64(symYear) + K, C) < L
 }
+
+func SymNewYearDay(symYear int) (int) {
+  E := float64(symYear - 1)
+  fixedDayNumber := SymEpoch + 364.0 * E + 7 * math.Floor((52.0 * E + 146.0) / 293.0)
+  return int(fixedDayNumber)
+}
+
