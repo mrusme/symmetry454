@@ -60,3 +60,8 @@ func SymNewYearDay(symYear int) (int) {
   return int(fixedDayNumber)
 }
 
+func SymDaysBeforeMonth(symMonth int) (int) {
+  symMonthF := float64(symMonth)
+  symDaysBeforeMonth := 28 * (symMonthF - 1) + 7 * math.Floor(symMonthF / 3)
+  return int(symDaysBeforeMonth)
+}
