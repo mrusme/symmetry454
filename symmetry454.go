@@ -65,3 +65,7 @@ func SymDaysBeforeMonth(symMonth int) (int) {
   symDaysBeforeMonth := 28 * (symMonthF - 1) + 7 * math.Floor(symMonthF / 3)
   return int(symDaysBeforeMonth)
 }
+
+func SymDayOfYear(symMonth int, symDay int) (int) {
+  return (SymDaysBeforeMonth(symMonth) + symDay);
+}

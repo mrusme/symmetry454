@@ -38,3 +38,10 @@ func TestSymDaysBeforeMonth(t *testing.T) {
     t.Fatalf(`SymDaysBeforeMonth(6) = %v, want 154`, res)
   }
 }
+
+func TestSymDayOfYear(t *testing.T) {
+  res := SymDayOfYear(6, 17)
+  if res != 171 {
+    t.Fatalf(`SymDayOfYear(6, 17) = %v, want 171`, res)
+  }
+}
