@@ -54,7 +54,7 @@ func TestSymToFixed(t *testing.T) {
 }
 
 func TestFixedToSymYear(t *testing.T) {
-  res := FixedToSymYear(733774)
+  res, _ := FixedToSymYear(733774)
   if res != 2009 {
     t.Fatalf(`FixedToSymYear(733774) = %v, want 2009`, res)
   }
