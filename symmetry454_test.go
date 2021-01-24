@@ -18,6 +18,13 @@ func TestGregorianOrdinalDay(t *testing.T) {
   }
 }
 
+func TestGregorianToFixed(t *testing.T) {
+  res := GregorianToFixedDate(2004, 12, 31)
+  if res != 731946 {
+    t.Fatalf(`TestGregorianToFixed(2004, 12, 31) = %v, want 731946`, res)
+  }
+}
+
 func TestIsSymLeapYear(t *testing.T) {
   res := IsSymLeapYear(2009)
   if res != true {

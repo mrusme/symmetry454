@@ -47,6 +47,12 @@ func GregorianOrdinalDay(gregYear int, gregMonth int, gregDay int) (int) {
   return int(gregorianOrdinalDay)
 }
 
+func GregorianToFixedDate(gregYear int, gregMonth int, gregDay int) (int) {
+  year := PriorElapsedDays(gregYear)
+  day := GregorianOrdinalDay(gregYear, gregMonth, gregDay)
+  return (year + day)
+}
+
 func IsSymLeapYear(symYear int) (bool) {
   C := 293.0
   L := 52.0
