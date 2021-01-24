@@ -67,3 +67,10 @@ func TestFixedToSym(t *testing.T) {
     t.Fatalf(`FixedToSym(%v) = (%v, %v, %v), want (2009, 4, 5)`, fixed, year, month, day)
   }
 }
+
+func TestFixedToWeekdayNum(t *testing.T) {
+  res := FixedToWeekdayNum(1461)
+  if res != 5 {
+    t.Fatalf(`FixedToWeekdayNum(1461) = %v, want 5`, res)
+  }
+}

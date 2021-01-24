@@ -129,3 +129,9 @@ func FixedToSym(fixedDate int) (int, int, int) {
   // )
   return symYear, symMonth, symDay
 }
+
+func FixedToWeekdayNum(fixedDate int) (int) {
+  _, _, symDay := FixedToSym(fixedDate)
+  weekday := int(math.Mod(float64(symDay), 7.0))
+  return weekday
+}
