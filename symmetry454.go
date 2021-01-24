@@ -9,6 +9,12 @@ import (
 const GregorianEpoch = 1
 const SymEpoch = GregorianEpoch
 
+type Sym struct {
+  Year      int
+  Month     int
+  Day       int
+}
+
 func PriorElapsedDays(gregYear int) (int) {
   priorYear := float64(gregYear) - 1.0
   priorElapsedDays :=
@@ -142,4 +148,14 @@ func FixedToWeekdayNum(fixedDate int) (int) {
   _, _, symDay := FixedToSym(fixedDate)
   weekday := int(math.Mod(float64(symDay), 7.0))
   return weekday
+}
+
+func FromTime(t time.Time) (Sym) {
+  sym := Sym{
+    Year: t.Year(),
+    Month: int(t.Month()),
+    Day: t.Day(),
+  }
+
+  return sym
 }

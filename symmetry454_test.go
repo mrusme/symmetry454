@@ -2,6 +2,7 @@ package symmetry454
 
 import (
   "testing"
+  "time"
 )
 
 func TestPriorElapsedDays(t *testing.T) {
@@ -95,5 +96,13 @@ func TestFixedToWeekdayNum(t *testing.T) {
   res := FixedToWeekdayNum(1461)
   if res != 5 {
     t.Fatalf(`FixedToWeekdayNum(1461) = %v, want 5`, res)
+  }
+}
+
+func TestFromTime(t *testing.T) {
+  tm := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
+  res := FromTime(tm)
+  if res.Year != 1970 || res.Month != 1 || res.Day != 1 {
+    t.Fatalf(`FromTime(t) = (%v, %v, %v), want (1970, 1, 1)`, res.Year, res.Month, res.Day)
   }
 }
