@@ -33,8 +33,8 @@ func IsGregorianLeapYear(gregYear int) (bool) {
 }
 
 func GregorianOrdinalDay(gregYear int, gregMonth int, gregDay int) (int) {
-  gregorianOrdinalDay := math.Floor((367.0 * float64(gregMonth) - 362.0) / 12.0) +
-    float64(gregDay)
+  gregorianOrdinalDay :=
+    math.Floor((367.0 * float64(gregMonth) - 362.0) / 12.0) + float64(gregDay)
 
   if gregMonth > 2 {
     if IsGregorianLeapYear(gregYear) == true {
@@ -56,7 +56,8 @@ func IsSymLeapYear(symYear int) (bool) {
 
 func SymNewYearDay(symYear int) (int) {
   E := float64(symYear - 1)
-  fixedDayNumber := SymEpoch + 364.0 * E + 7 * math.Floor((52.0 * E + 146.0) / 293.0)
+  fixedDayNumber :=
+    SymEpoch + 364.0 * E + 7 * math.Floor((52.0 * E + 146.0) / 293.0)
   return int(fixedDayNumber)
 }
 
@@ -108,7 +109,8 @@ func FixedToSym(fixedDate int) (int, int, int) {
     daysInYear = 371
   }
   /*weeksInYear*/ _ = daysInYear / 7
-  daysInMonth := int(28 + 7 * math.Floor((math.Mod(float64(symMonth), 3.0) / 2.0)))
+  daysInMonth :=
+    int(28 + 7 * math.Floor((math.Mod(float64(symMonth), 3.0) / 2.0)))
   if symMonth == 12 {
     if IsSymLeapYear(symYear) {
       daysInMonth += 7
