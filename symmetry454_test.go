@@ -60,3 +60,10 @@ func TestFixedToSymYear(t *testing.T) {
   }
 }
 
+func TestFixedToSym(t *testing.T) {
+  fixed := SymToFixed(2009, 4, 5)
+  year, month, day := FixedToSym(fixed)
+  if year != 2009 || month != 4 || day != 5 {
+    t.Fatalf(`FixedToSym(%v) = (%v, %v, %v), want (2009, 4, 5)`, fixed, year, month, day)
+  }
+}

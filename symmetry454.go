@@ -93,4 +93,39 @@ func FixedToSymYear(fixedDate int) (int, int) {
 
   return symYear, startOfYear
 }
+
+func FixedToSym(fixedDate int) (int, int, int) {
+  symYear, startOfYear := FixedToSymYear(fixedDate)
+  dayOfYear := fixedDate - startOfYear + 1
+  weekOfYear := int(math.Ceil(float64(dayOfYear) / 7))
+  quarter := int(math.Ceil((4.0 / 53.0) * float64(weekOfYear)))
+  dayOfQuarter := dayOfYear - 91 * (quarter - 1)
+  weekOfQuarter := int(math.Ceil(float64(dayOfQuarter) / 7.0))
+  monthOfQuarter := int(math.Ceil((2.0 / 9.0) * float64(weekOfQuarter)))
+  symMonth := 3 * quarter + monthOfQuarter - 3
+  daysInYear := 364
+  if IsSymLeapYear(symYear) {
+    daysInYear = 371
+  }
+  /*weeksInYear*/ _ = daysInYear / 7
+  daysInMonth := int(28 + 7 * math.Floor((math.Mod(float64(symMonth), 3.0) / 2.0)))
+  if symMonth == 12 {
+    if IsSymLeapYear(symYear) {
+      daysInMonth += 7
+    }
+  }
+  /*weeksInMonth*/_ = daysInMonth / 7
+  symDay := dayOfYear - SymDaysBeforeMonth(symMonth)
+
+  // fmt.Printf("dayOfYear: %v\nweekOfYear: %v\nquarter: %v\ndayOfQuarter: %v\nweekOfQuarter: %v\nmonthOfQuarter: %v\ndaysInYear: %v\ndaysInMonth: %v\n",
+  //   dayOfYear,
+  //   weekOfYear,
+  //   quarter,
+  //   dayOfQuarter,
+  //   weekOfQuarter,
+  //   monthOfQuarter,
+  //   daysInYear,
+  //   daysInMonth,
+  // )
+  return symYear, symMonth, symDay
 }
