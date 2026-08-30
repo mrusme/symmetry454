@@ -1,197 +1,316 @@
 package symmetry454
 
 import (
-  "time"
-  "math"
+	"fmt"
+	"math"
+	"time"
 )
 
 const GregorianEpoch = 1
 const SymEpoch = GregorianEpoch
 
+const DaysInCommonYear = 364
+const DaysInLeapYear = 371
+
 type Sym struct {
-  Year      int
-  Month     int
-  Day       int
+	Year  int
+	Month int
+	Day   int
 }
 
-func modulus(x float64, y float64) (float64) {
-  return x - y * math.Floor(x / y)
+func modulus(x float64, y float64) float64 {
+	return x - y*math.Floor(x/y)
 }
 
-func PriorElapsedDays(gregYear int) (int) {
-  priorYear := float64(gregYear) - 1.0
-  priorElapsedDays :=
-    GregorianEpoch +
-    priorYear * 365 +
-    math.Floor(priorYear / 4) -
-    math.Floor(priorYear / 100) +
-    math.Floor(priorYear / 400) -
-    1
-  return int(priorElapsedDays)
+func PriorElapsedDays(gregYear int) int {
+	priorYear := float64(gregYear) - 1.0
+	priorElapsedDays :=
+		GregorianEpoch +
+			priorYear*365 +
+			math.Floor(priorYear/4) -
+			math.Floor(priorYear/100) +
+			math.Floor(priorYear/400) -
+			1
+	return int(priorElapsedDays)
 }
 
-func IsGregorianLeapYear(gregYear int) (bool) {
-  if gregYear % 4 != 0 {
-    return false
-  }
+func IsGregorianLeapYear(gregYear int) bool {
+	if gregYear%4 != 0 {
+		return false
+	}
 
-  if gregYear % 100 != 0 {
-    return true
-  }
+	if gregYear%100 != 0 {
+		return true
+	}
 
-  return gregYear % 400 == 0
+	return gregYear%400 == 0
 }
 
-func GregorianOrdinalDay(gregYear int, gregMonth int, gregDay int) (int) {
-  gregorianOrdinalDay :=
-    math.Floor((367.0 * float64(gregMonth) - 362.0) / 12.0) + float64(gregDay)
+func GregorianOrdinalDay(gregYear int, gregMonth int, gregDay int) int {
+	gregorianOrdinalDay :=
+		math.Floor((367.0*float64(gregMonth)-362.0)/12.0) + float64(gregDay)
 
-  if gregMonth > 2 {
-    if IsGregorianLeapYear(gregYear) == true {
-      gregorianOrdinalDay -= 1.0
-    } else {
-      gregorianOrdinalDay -= 2.0
-    }
-  }
+	if gregMonth > 2 {
+		if IsGregorianLeapYear(gregYear) == true {
+			gregorianOrdinalDay -= 1.0
+		} else {
+			gregorianOrdinalDay -= 2.0
+		}
+	}
 
-  return int(gregorianOrdinalDay)
+	return int(gregorianOrdinalDay)
 }
 
-func GregorianToFixedDate(gregYear int, gregMonth int, gregDay int) (int) {
-  year := PriorElapsedDays(gregYear)
-  day := GregorianOrdinalDay(gregYear, gregMonth, gregDay)
-  return (year + day)
+func GregorianToFixedDate(gregYear int, gregMonth int, gregDay int) int {
+	year := PriorElapsedDays(gregYear)
+	day := GregorianOrdinalDay(gregYear, gregMonth, gregDay)
+	return (year + day)
 }
 
 func FixedToGregorian(fixedDate int) (int, int, int) {
-  d0 := float64(fixedDate - GregorianEpoch)
-  n400 := math.Floor(d0 / 146097.0)
-  d1 := modulus(d0, 146097.0)
-  n100 := math.Floor(d1 / 36524.0)
-  d2 := modulus(d1, 36524.0)
-  n4 := math.Floor(d2 / 1461.0)
-  d3 := modulus(d2, 1461.0)
-  n1 := math.Floor(d3 / 365.0)
+	d0 := float64(fixedDate - GregorianEpoch)
+	n400 := math.Floor(d0 / 146097.0)
+	d1 := modulus(d0, 146097.0)
+	n100 := math.Floor(d1 / 36524.0)
+	d2 := modulus(d1, 36524.0)
+	n4 := math.Floor(d2 / 1461.0)
+	d3 := modulus(d2, 1461.0)
+	n1 := math.Floor(d3 / 365.0)
 
-  gregYear := int(400.0 * n400 + 100.0 * n100 + 4.0 * n4 + n1)
-  if n100 != 4.0 && n1 != 4.0 {
-    gregYear += 1
-  }
+	gregYear := int(400.0*n400 + 100.0*n100 + 4.0*n4 + n1)
+	if n100 != 4.0 && n1 != 4.0 {
+		gregYear += 1
+	}
 
-  priorDays := fixedDate - GregorianToFixedDate(gregYear, 1, 1)
+	priorDays := fixedDate - GregorianToFixedDate(gregYear, 1, 1)
 
-  correction := 2
-  if fixedDate < GregorianToFixedDate(gregYear, 3, 1) {
-    correction = 0
-  } else if IsGregorianLeapYear(gregYear) {
-    correction = 1
-  }
+	correction := 2
+	if fixedDate < GregorianToFixedDate(gregYear, 3, 1) {
+		correction = 0
+	} else if IsGregorianLeapYear(gregYear) {
+		correction = 1
+	}
 
-  gregMonth :=
-    int(math.Floor((12.0 * float64(priorDays + correction) + 373.0) / 367.0))
-  gregDay := fixedDate - GregorianToFixedDate(gregYear, gregMonth, 1) + 1
+	gregMonth :=
+		int(math.Floor((12.0*float64(priorDays+correction) + 373.0) / 367.0))
+	gregDay := fixedDate - GregorianToFixedDate(gregYear, gregMonth, 1) + 1
 
-  return gregYear, gregMonth, gregDay
+	return gregYear, gregMonth, gregDay
 }
 
-func IsSymLeapYear(symYear int) (bool) {
-  C := 293.0
-  L := 52.0
-  K := (C - 1.0) / 2.0
-  return modulus(L * float64(symYear) + K, C) < L
+func IsSymLeapYear(symYear int) bool {
+	C := 293.0
+	L := 52.0
+	K := (C - 1.0) / 2.0
+	return modulus(L*float64(symYear)+K, C) < L
 }
 
-func SymNewYearDay(symYear int) (int) {
-  E := float64(symYear - 1)
-  fixedDayNumber :=
-    SymEpoch + 364.0 * E + 7 * math.Floor((52.0 * E + 146.0) / 293.0)
-  return int(fixedDayNumber)
+func SymNewYearDay(symYear int) int {
+	E := float64(symYear - 1)
+	fixedDayNumber :=
+		SymEpoch + 364.0*E + 7*math.Floor((52.0*E+146.0)/293.0)
+	return int(fixedDayNumber)
 }
 
-func SymDaysBeforeMonth(symMonth int) (int) {
-  symMonthF := float64(symMonth)
-  symDaysBeforeMonth := 28 * (symMonthF - 1) + 7 * math.Floor(symMonthF / 3)
-  return int(symDaysBeforeMonth)
+func SymDaysBeforeMonth(symMonth int) int {
+	symMonthF := float64(symMonth)
+	symDaysBeforeMonth := 28*(symMonthF-1) + 7*math.Floor(symMonthF/3)
+	return int(symDaysBeforeMonth)
 }
 
-func SymDayOfYear(symMonth int, symDay int) (int) {
-  return (SymDaysBeforeMonth(symMonth) + symDay);
+func SymDayOfYear(symMonth int, symDay int) int {
+	return (SymDaysBeforeMonth(symMonth) + symDay)
 }
 
-func SymDaysInMonth(symYear int, symMonth int) (int) {
-  daysInMonth :=
-    28 + 7 * int(math.Floor(modulus(float64(symMonth), 3.0) / 2.0))
+func SymDaysInMonth(symYear int, symMonth int) int {
+	daysInMonth :=
+		28 + 7*int(math.Floor(modulus(float64(symMonth), 3.0)/2.0))
 
-  if symMonth == 12 && IsSymLeapYear(symYear) {
-    daysInMonth += 7
-  }
+	if symMonth == 12 && IsSymLeapYear(symYear) {
+		daysInMonth += 7
+	}
 
-  return daysInMonth
+	return daysInMonth
 }
 
-func SymToFixed(symYear int, symMonth int, symDay int) (int) {
-  return (SymNewYearDay(symYear) + SymDayOfYear(symMonth, symDay) - 1)
+func SymDaysInYear(symYear int) int {
+	if IsSymLeapYear(symYear) {
+		return DaysInLeapYear
+	}
+
+	return DaysInCommonYear
+}
+
+func SymToFixed(symYear int, symMonth int, symDay int) int {
+	return (SymNewYearDay(symYear) + SymDayOfYear(symMonth, symDay) - 1)
 }
 
 func FixedToSymYear(fixedDate int) (int, int) {
-  cycleMeanYear := 365.0 + 71.0 / 293.0
-  symYear := int(math.Ceil((float64(fixedDate) - SymEpoch) / cycleMeanYear))
-  startOfYear := SymNewYearDay(symYear)
-  if startOfYear < fixedDate {
-    if fixedDate - startOfYear >= 364 {
-      startOfNextYear := SymNewYearDay(symYear + 1)
-      if fixedDate >= startOfNextYear {
-        symYear += 1
-        startOfYear = startOfNextYear
-      }
-    }
-  } else if startOfYear > fixedDate {
-    symYear -= 1
-    startOfYear = SymNewYearDay(symYear)
-  }
+	cycleMeanYear := 365.0 + 71.0/293.0
+	symYear := int(math.Ceil((float64(fixedDate) - SymEpoch) / cycleMeanYear))
+	startOfYear := SymNewYearDay(symYear)
+	if startOfYear < fixedDate {
+		if fixedDate-startOfYear >= 364 {
+			startOfNextYear := SymNewYearDay(symYear + 1)
+			if fixedDate >= startOfNextYear {
+				symYear += 1
+				startOfYear = startOfNextYear
+			}
+		}
+	} else if startOfYear > fixedDate {
+		symYear -= 1
+		startOfYear = SymNewYearDay(symYear)
+	}
 
-  return symYear, startOfYear
+	return symYear, startOfYear
 }
 
 func FixedToSym(fixedDate int) (int, int, int) {
-  symYear, startOfYear := FixedToSymYear(fixedDate)
-  dayOfYear := fixedDate - startOfYear + 1
-  weekOfYear := int(math.Ceil(float64(dayOfYear) / 7.0))
-  quarter := int(math.Ceil((4.0 / 53.0) * float64(weekOfYear)))
-  dayOfQuarter := dayOfYear - 91 * (quarter - 1)
-  weekOfQuarter := int(math.Ceil(float64(dayOfQuarter) / 7.0))
-  monthOfQuarter := int(math.Ceil((2.0 / 9.0) * float64(weekOfQuarter)))
-  if monthOfQuarter > 3 {
-    monthOfQuarter = 3
-  }
-  symMonth := 3 * quarter + monthOfQuarter - 3
-  symDay := dayOfYear - SymDaysBeforeMonth(symMonth)
+	symYear, startOfYear := FixedToSymYear(fixedDate)
+	dayOfYear := fixedDate - startOfYear + 1
+	weekOfYear := int(math.Ceil(float64(dayOfYear) / 7.0))
+	quarter := int(math.Ceil((4.0 / 53.0) * float64(weekOfYear)))
+	dayOfQuarter := dayOfYear - 91*(quarter-1)
+	weekOfQuarter := int(math.Ceil(float64(dayOfQuarter) / 7.0))
+	monthOfQuarter := int(math.Ceil((2.0 / 9.0) * float64(weekOfQuarter)))
+	if monthOfQuarter > 3 {
+		monthOfQuarter = 3
+	}
+	symMonth := 3*quarter + monthOfQuarter - 3
+	symDay := dayOfYear - SymDaysBeforeMonth(symMonth)
 
-  return symYear, symMonth, symDay
+	return symYear, symMonth, symDay
 }
 
-func FixedToWeekdayNum(fixedDate int) (int) {
-  weekdayAdjust := modulus(SymEpoch - 1, 7.0)
-  return int(modulus(float64(fixedDate) - weekdayAdjust, 7.0))
+func FixedToWeekdayNum(fixedDate int) int {
+	weekdayAdjust := modulus(SymEpoch-1, 7.0)
+	return int(modulus(float64(fixedDate)-weekdayAdjust, 7.0))
 }
 
-func FromTime(t time.Time) (Sym) {
-  fixedDate := GregorianToFixedDate(t.Year(), int(t.Month()), t.Day())
-  symYear, symMonth, symDay := FixedToSym(fixedDate)
+func MonthName(symMonth int) string {
+	if symMonth < 1 || symMonth > 12 {
+		return ""
+	}
 
-  sym := Sym{
-    Year: symYear,
-    Month: symMonth,
-    Day: symDay,
-  }
-
-  return sym
+	return time.Month(symMonth).String()
 }
 
-func (sym Sym) ToTime() (time.Time) {
-  fixedDate := SymToFixed(sym.Year, sym.Month, sym.Day)
-  gregYear, gregMonth, gregDay := FixedToGregorian(fixedDate)
+func FromFixed(fixedDate int) Sym {
+	symYear, symMonth, symDay := FixedToSym(fixedDate)
 
-  return time.Date(
-    gregYear, time.Month(gregMonth), gregDay, 0, 0, 0, 0, time.UTC)
+	return Sym{
+		Year:  symYear,
+		Month: symMonth,
+		Day:   symDay,
+	}
+}
+
+func FromTime(t time.Time) Sym {
+	fixedDate := GregorianToFixedDate(t.Year(), int(t.Month()), t.Day())
+	symYear, symMonth, symDay := FixedToSym(fixedDate)
+
+	sym := Sym{
+		Year:  symYear,
+		Month: symMonth,
+		Day:   symDay,
+	}
+
+	return sym
+}
+
+func (sym Sym) Fixed() int {
+	return SymToFixed(sym.Year, sym.Month, sym.Day)
+}
+
+func (sym Sym) StartOfYear() int {
+	return SymNewYearDay(sym.Year)
+}
+
+func (sym Sym) IsLeapYear() bool {
+	return IsSymLeapYear(sym.Year)
+}
+
+func (sym Sym) Valid() bool {
+	if sym.Month < 1 || sym.Month > 12 {
+		return false
+	}
+
+	return sym.Day >= 1 && sym.Day <= SymDaysInMonth(sym.Year, sym.Month)
+}
+
+func (sym Sym) Weekday() time.Weekday {
+	return time.Weekday(FixedToWeekdayNum(sym.Fixed()))
+}
+
+func (sym Sym) MonthName() string {
+	return MonthName(sym.Month)
+}
+
+func (sym Sym) DayOfYear() int {
+	return SymDayOfYear(sym.Month, sym.Day)
+}
+
+func (sym Sym) WeekOfYear() int {
+	return int(math.Ceil(float64(sym.DayOfYear()) / 7.0))
+}
+
+func (sym Sym) Quarter() int {
+	return int(math.Ceil((4.0 / 53.0) * float64(sym.WeekOfYear())))
+}
+
+func (sym Sym) DayOfQuarter() int {
+	return sym.DayOfYear() - 91*(sym.Quarter()-1)
+}
+
+func (sym Sym) WeekOfQuarter() int {
+	return int(math.Ceil(float64(sym.DayOfQuarter()) / 7.0))
+}
+
+func (sym Sym) MonthOfQuarter() int {
+	monthOfQuarter := int(math.Ceil((2.0 / 9.0) * float64(sym.WeekOfQuarter())))
+	if monthOfQuarter > 3 {
+		monthOfQuarter = 3
+	}
+
+	return monthOfQuarter
+}
+
+func (sym Sym) WeekOfMonth() int {
+	return int(math.Ceil(float64(sym.Day) / 7.0))
+}
+
+func (sym Sym) DaysInMonth() int {
+	return SymDaysInMonth(sym.Year, sym.Month)
+}
+
+func (sym Sym) WeeksInMonth() int {
+	return sym.DaysInMonth() / 7
+}
+
+func (sym Sym) DaysInYear() int {
+	return SymDaysInYear(sym.Year)
+}
+
+func (sym Sym) WeeksInYear() int {
+	return sym.DaysInYear() / 7
+}
+
+func (sym Sym) String() string {
+	if sym.Year < 0 {
+		return fmt.Sprintf("-%04d-%02d-%02d", -sym.Year, sym.Month, sym.Day)
+	}
+
+	return fmt.Sprintf("%04d-%02d-%02d", sym.Year, sym.Month, sym.Day)
+}
+
+func (sym Sym) ToTime() time.Time {
+	return sym.ToTimeIn(time.UTC)
+}
+
+func (sym Sym) ToTimeIn(loc *time.Location) time.Time {
+	fixedDate := SymToFixed(sym.Year, sym.Month, sym.Day)
+	gregYear, gregMonth, gregDay := FixedToGregorian(fixedDate)
+
+	return time.Date(
+		gregYear, time.Month(gregMonth), gregDay, 0, 0, 0, 0, loc)
 }
